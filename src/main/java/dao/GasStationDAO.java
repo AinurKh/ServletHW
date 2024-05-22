@@ -2,39 +2,54 @@ package dao;
 
 import connection.DataBaseConnectorSingleton;
 import entity.GasStationBuilder;
+import entity.PersonBuilder;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class GasStationDAO {
+   private static final String ADD_STATION = "INSERT INTO gas_station (name,number) VALUES (?,?)";
+   private static final String GET_ALL_STATIONS = "SELECT * FROM gas_station";
+   private static final String GET_STATION_BY_ID = "SELECT * FROM gas_station WHERE id = ?";
+   private static final String UPDATE_STATION = "UPDATE gas_station SET name = ?, number = ? WHERE id = ?";
+   private static final String DELETE_STATION = "DELETE FROM gas_station WHERE id = ?";
+   private static final String GET_PERSONS_OF_STATION = "SELECT * FROM person JOIN person_gas_station ON person.id = person_gas_station.person_id WHERE person_gas_station.gas_station_id = ?";
 
-    public void addStation(GasStationBuilder gasStation) throws SQLException, IOException {
-        String sql = "INSERT INTO gas_station VALUES (?,?)";
 
-        try(Connection connection = DataBaseConnectorSingleton.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+   private final PreparedStatement getAllStations;
+   private final PreparedStatement getStationById;
+   private final PreparedStatement updateStation;
+   private final PreparedStatement deleteStation;
+   private final PreparedStatement insertStation;
+   private final PreparedStatement getPersonsOfStation;
 
-            preparedStatement.setString(1, gasStation.getName());
-            preparedStatement.setInt(2, gasStation.getNumber());
-            preparedStatement.executeUpdate();
-        }
+    public GasStationDAO() throws SQLException, IOException {
+        Connection connection = DataBaseConnectorSingleton.getInstance().getConnection();
+
+        getAllStations= connection.prepareStatement(GET_ALL_STATIONS);
+        getStationById = connection.prepareStatement(GET_STATION_BY_ID);
+
+        updateStation= connection.prepareStatement(UPDATE_STATION);
+        deleteStation= connection.prepareStatement(DELETE_STATION);
+        insertStation= connection.prepareStatement(ADD_STATION);
+        getPersonsOfStation = connection.prepareStatement(GET_PERSONS_OF_STATION);
     }
 
-    public List<GasStationBuilder> getAllStations() throws SQLException, IOException {
+    public void addStation(GasStationBuilder gasStation) throws SQLException {
+        insertStation.setString(1, gasStation.getName());
+        insertStation.setInt(2, gasStation.getNumber());
+
+        insertStation.executeUpdate();
+    }
+
+    public List<GasStationBuilder> getAllStations() throws SQLException {
         List<GasStationBuilder> gasStations = new ArrayList<>();
-        String sql = "SELECT * FROM gas_station";
-
-        try(Connection connection = DataBaseConnectorSingleton.getInstance().getConnection();
-            Statement statement = connection.prepareStatement(sql)){
-
-            ResultSet resultSet = statement.getResultSet();
+            ResultSet resultSet = getAllStations.executeQuery();
             while(resultSet.next()) {
                 GasStationBuilder gasStation = new GasStationBuilder.Builder()
                         .setId(resultSet.getInt("id"))
@@ -44,52 +59,57 @@ public class GasStationDAO {
 
                 gasStations.add(gasStation);
             }
-        }
         return gasStations;
     }
 
-    public Optional<GasStationBuilder> getStationById(int id) throws SQLException, IOException {
-        String sql = "SELECT * FROM gas_station WHERE id = ?";
-        GasStationBuilder gasStation = null;
+    public GasStationBuilder getStationById(int id) throws SQLException {
+        getStationById.setInt(1, id);
+        ResultSet resultSet = getStationById.executeQuery();
 
-        try(Connection connection = DataBaseConnectorSingleton.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+        if(resultSet.next()) {
+            GasStationBuilder gasStation = new GasStationBuilder.Builder()
+                    .setId(resultSet.getInt("id"))
+                    .setName(resultSet.getString("name"))
+                    .setNumber(resultSet.getInt("number"))
+                    .build();
 
-            preparedStatement.setInt(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if(resultSet.next()) {
-                gasStation = new GasStationBuilder.Builder()
-                        .setId(resultSet.getInt("id"))
-                        .setName(resultSet.getString("name"))
-                        .setNumber(resultSet.getInt("number"))
-                        .build();
-            }
-        }
-        return Optional.ofNullable(gasStation);
+            return gasStation;
+        } else
+            return null;
     }
 
-    public void updateStation(GasStationBuilder gasStation) throws SQLException, IOException {
-        String sql = "UPDATE gas_station SET name = ?, number = ? WHERE id = ?";
+    public void updateStation(GasStationBuilder gasStation, int id) throws SQLException {
+        updateStation.setString(1, gasStation.getName());
+        updateStation.setInt(2, gasStation.getNumber());
+        updateStation.setInt(3, id);
 
-        try(Connection connection = DataBaseConnectorSingleton.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
-
-            preparedStatement.setString(1, gasStation.getName());
-            preparedStatement.setInt(2, gasStation.getNumber());
-            preparedStatement.setInt(3, gasStation.getId());
-
-            preparedStatement.executeUpdate();
-        }
+        updateStation.executeUpdate();
     }
 
-    public void deleteStation(GasStationBuilder gasStation) throws SQLException, IOException {
-        String sql = "DELETE FROM gas_station WHERE id = ?";
-
-        try(Connection connection = DataBaseConnectorSingleton.getInstance().getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql)){
-            preparedStatement.setInt(1, gasStation.getId());
-            preparedStatement.executeUpdate();
-        }
+    public void deleteStation(int id) throws SQLException {
+            deleteStation.setInt(1, id);
+            deleteStation.executeUpdate();
     }
+
+    public List<PersonBuilder> getPersonsOfStation(int stationId) throws SQLException, IOException {
+        List<PersonBuilder> persons = new ArrayList<>();
+        CarDao carDao = new CarDao();
+        PersonDao personDao = new PersonDao();
+        getPersonsOfStation.setInt(1, stationId);
+        ResultSet resultSet = getPersonsOfStation.executeQuery();
+        while(resultSet.next()) {
+            PersonBuilder personBuilder = new PersonBuilder.Builder()
+                    .setId(resultSet.getInt("id"))
+                    .setName(resultSet.getString("name"))
+                    .setAge(resultSet.getInt("age"))
+                    .setStationList(personDao.getGasStations(resultSet.getInt("id")))
+                    .setCar(carDao.getCarById(resultSet.getInt("id")))
+                    .build();
+            persons.add(personBuilder);
+        }
+        return persons;
+    }
+
+
+
 }

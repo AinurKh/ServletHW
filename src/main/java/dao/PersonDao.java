@@ -1,6 +1,8 @@
 package dao;
 
 import connection.DataBaseConnectorSingleton;
+import entity.CarBuilder;
+import entity.GasStationBuilder;
 import entity.PersonBuilder;
 
 import java.io.IOException;
@@ -8,100 +10,155 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class PersonDao {
+    private static final String GET_ALL_PERSONS = "select * from person";
+    private static final String GET_PERSON_BY_ID = "SELECT * FROM person WHERE id = ?";
+    private static final String ADD_PERSON = "INSERT INTO person(name,age) VALUES(?, ?) returning id";
+    private static final String DELETE_PERSON = "DELETE FROM person WHERE id = ?";
+    private static final String UPDATE_PERSON = "UPDATE person SET name = ?, age = ? WHERE id = ?";
+    private static final String GET_PERSON_WITH_CAR="SELECT * FROM person  LEFT JOIN car ON person.id = car.person_id WHERE person.id = ?";
+    private static final String GET_STATIONS_LIST = "SELECT * FROM gas_station JOIN person_gas_station ON gas_station.id = person_gas_station.gas_station_id WHERE person_gas_station.person_id = ?";
 
-    public void addPerson(PersonBuilder personBuilder)  {
-        String sql = "insert into person (name, age) values (?, ?)";
+    private final PreparedStatement getAllPersons;
+    private final PreparedStatement getPersonById;
+    private final PreparedStatement addPerson;
+    private final PreparedStatement deletePerson;
+    private final PreparedStatement updatePerson;
+    private final PreparedStatement getPersonWithCar;
+    private final PreparedStatement getStationsList;
 
-        try(Connection connection = DataBaseConnectorSingleton.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
-
-            preparedStatement.setString(1, personBuilder.getName());
-            preparedStatement.setInt(2, personBuilder.getAge());
-            preparedStatement.executeUpdate();
-
-        }catch (SQLException | IOException e){
-            e.printStackTrace();
-        }
+    public PersonDao() throws SQLException, IOException {
+        Connection connection = DataBaseConnectorSingleton.getInstance().getConnection();
+        getAllPersons=connection.prepareStatement(GET_ALL_PERSONS);
+        getPersonById=connection.prepareStatement(GET_PERSON_BY_ID);
+        addPerson=connection.prepareStatement(ADD_PERSON);
+        deletePerson=connection.prepareStatement(DELETE_PERSON);
+        updatePerson=connection.prepareStatement(UPDATE_PERSON);
+        getPersonWithCar=connection.prepareStatement(GET_PERSON_WITH_CAR);
+        getStationsList=connection.prepareStatement(GET_STATIONS_LIST);
     }
 
-    public List<PersonBuilder> getPeople() {
-        String sql = "select * from person";
+    public void addPerson(PersonBuilder personBuilder) throws SQLException, IOException {
+            addPerson.setString(1, personBuilder.getName());
+            addPerson.setInt(2, personBuilder.getAge());
+            ResultSet resultSet = addPerson.executeQuery();
+
+            if (checkCar(personBuilder)){
+                addCar(resultSet,personBuilder);
+            }
+    }
+
+    public List<PersonBuilder> getPeople() throws SQLException, IOException {
         List<PersonBuilder> peopleList = new ArrayList<>();
-
-        try(Connection connection = DataBaseConnectorSingleton.getInstance().getConnection();
-            Statement statement = connection.prepareStatement(sql)){
-
-            ResultSet resultSet = statement.executeQuery(sql);
+        CarDao carDao=new CarDao();
+        ResultSet resultSet = getAllPersons.executeQuery();
             while (resultSet.next()) {
+                int id = resultSet.getInt("id");
                 PersonBuilder personBuilder = new PersonBuilder.Builder()
                         .setId(resultSet.getInt("id"))
                         .setName(resultSet.getString("name"))
                         .setAge(resultSet.getInt("age"))
+                        .setCar(carDao.getCarById(id))
                         .build();
-
                 peopleList.add(personBuilder);
             }
-
-        }catch (SQLException | IOException e){
-            e.printStackTrace();
-        }
         return peopleList;
     }
 
+    public PersonBuilder getPersonById(int id) throws SQLException, IOException {
+        getPersonById.setInt(1, id);
+        CarDao carDao = new CarDao();
+        ResultSet resultSet = getPersonById.executeQuery();
 
+        if (resultSet.next()){
+            PersonBuilder personBuilder = new PersonBuilder.Builder()
+                    .setId(resultSet.getInt("id"))
+                    .setName(resultSet.getString("name"))
+                    .setAge(resultSet.getInt("age"))
+                    .setStationList(getGasStations(id))
+                    .setCar(carDao.getCarById(id))
+                    .build();
 
-    public Optional<PersonBuilder> getPersonById(int id) throws SQLException, IOException {
-        String sql = "select * from person where id = ?";
-
-        try(Connection connection = DataBaseConnectorSingleton.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
-
-            preparedStatement.setInt(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()){
-                PersonBuilder personBuilder = new PersonBuilder.Builder()
-                        .setId(resultSet.getInt("id"))
-                        .setName(resultSet.getString("name"))
-                        .setAge(resultSet.getInt("age"))
-                        .build();
-
-                return Optional.ofNullable(personBuilder);
-            }
-
+            return personBuilder;
         }
         return null;
     }
 
-    public void updatePerson(PersonBuilder personBuilder) throws SQLException, IOException {
-        String sql = "update person set name = ?, age = ? where id = ?";
+    public void updatePerson(PersonBuilder personBuilder, int id) throws SQLException {
+        updatePerson.setString(1, personBuilder.getName());
+        updatePerson.setInt(2, personBuilder.getAge());
+        updatePerson.setInt(3, id);
 
-        try(Connection connection = DataBaseConnectorSingleton.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+        updatePerson.executeUpdate();
+    }
 
-            preparedStatement.setString(1, personBuilder.getName());
-            preparedStatement.setInt(2, personBuilder.getAge());
-            preparedStatement.setInt(3, personBuilder.getId());
+    public void deletePerson(int id) throws SQLException {
+            deletePerson.setInt(1, id);
+            deletePerson.executeUpdate();
+    }
 
-            preparedStatement.executeUpdate();
+    // Проверка есть ли у мужика уже машина, если есть то ее сразу вместе засунуть.
+    private boolean checkCar(PersonBuilder person){
+       return person.getCar().isPresent();
+    }
+
+    // Засунуть авто вместе с владельцем
+    private void addCar(ResultSet resultSet, PersonBuilder personBuilder) throws SQLException, IOException {
+        if (resultSet.next()) {
+            int id = resultSet.getInt(1);
+
+            CarBuilder car = new CarBuilder.Builder()
+                    .setPersonId(id)
+                    .setModel(personBuilder.getCar().get().getModel())
+                    .setHorsePower(personBuilder.getCar().get().getHorsePower())
+                    .build();
+
+            CarDao carDao = new CarDao();
+
+            carDao.addCar(car);
         }
     }
 
-    public void deletePerson(int id) throws SQLException, IOException {
-        String sql = "delete from person where id = ?";
+    public PersonBuilder getPersonWithCar(int id) throws SQLException {
+        PersonBuilder person= null;
+        getPersonWithCar.setInt(1,id);
+        ResultSet resultSet = getPersonWithCar.executeQuery();
+        if (resultSet.next()){
+            CarBuilder car = new CarBuilder.Builder()
+                    .setId(resultSet.getInt("car_id"))
+                    .setModel(resultSet.getString("model"))
+                    .setPersonId(resultSet.getInt("person_id"))
+                    .setHorsePower(resultSet.getInt("horse_power"))
+                    .build();
 
-        try(Connection connection= DataBaseConnectorSingleton.getInstance().getConnection();
-            PreparedStatement preparedStatement=connection.prepareStatement(sql)){
-
-            preparedStatement.setInt(1, id);
-            preparedStatement.executeUpdate();
+            person=new PersonBuilder.Builder()
+                    .setId(resultSet.getInt("id"))
+                    .setAge(resultSet.getInt("age"))
+                    .setName(resultSet.getString("name"))
+                    .setCar(car)
+                    .build();
         }
+        return person;
     }
+
+    public    List<GasStationBuilder> getGasStations(int id) throws SQLException, IOException {
+        List<GasStationBuilder> gasStations = new ArrayList<>();
+        String SQL = "SELECT * FROM gas_station JOIN person_gas_station ON gas_station.id = person_gas_station.gas_station_id WHERE person_gas_station.person_id = ?";
+        getStationsList.setInt(1,id);
+        ResultSet resultSet = getStationsList.executeQuery();
+        while (resultSet.next()) {
+            GasStationBuilder stationBuilder = new GasStationBuilder.Builder()
+                    .setId(resultSet.getInt("id"))
+                    .setName(resultSet.getString("name"))
+                    .setNumber(resultSet.getInt("number"))
+                    .build();
+            gasStations.add(stationBuilder);
+        }
+        return gasStations;
+    }
+
 
 }

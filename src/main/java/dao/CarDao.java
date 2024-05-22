@@ -8,94 +8,103 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class CarDao {
+    private static final String GET_CARS= "select * from car";
+    private static final String GET_CAR_BY_ID= "select * from car where car_id=?";
+    private static final String GET_CAR_BY_PERSON_ID= "select * from car where person_id=?";
+    private static final String ADD_CAR = "insert into car (person_id, model,horse_power) VALUES (?,?,?)";
+    private static final String DELETE_CAR= "delete from car where car_id=?";
+    private static final String UPDATE_CAR= "update car set model = ?, horse_power = ? where id=?";
 
-    public List<CarBuilder> getCars() throws SQLException, IOException {
-        String sql = "select * from car";
-        List<CarBuilder> carBuilderList = new ArrayList<>();
+    private final PreparedStatement getCars;
 
-        try(Connection connection= DataBaseConnectorSingleton.getInstance().getConnection();
-            Statement statement = connection.prepareStatement(sql)){
+    private final PreparedStatement getCarById;
+    private final PreparedStatement getCarByPersonId;
+    private final PreparedStatement addCar;
+    private final PreparedStatement deleteCar;
+    private final PreparedStatement updateCar;
 
-            ResultSet resultSet=statement.getResultSet();
-            while(resultSet.next()){
+    public CarDao() throws SQLException, IOException {
+        Connection connection = DataBaseConnectorSingleton.getInstance().getConnection();
+        getCars= connection.prepareStatement(GET_CARS);
+        addCar =connection.prepareStatement(ADD_CAR);
+        deleteCar=connection.prepareStatement(DELETE_CAR);
+        updateCar=connection.prepareStatement(UPDATE_CAR);
+        getCarById=connection.prepareStatement(GET_CAR_BY_ID);
+        getCarByPersonId=connection.prepareStatement(GET_CAR_BY_PERSON_ID);
+    }
+
+    public List<CarBuilder> getCars() throws SQLException {
+        List<CarBuilder> carList = new ArrayList<>();
+        ResultSet resultSet=getCars.executeQuery();
+
+        while(resultSet.next()){
                 CarBuilder carBuilder = new CarBuilder.Builder()
-                        .setId(resultSet.getInt("id"))
+                        .setId(resultSet.getInt("car_id"))
                         .setPersonId(resultSet.getInt("person_id"))
                         .setModel(resultSet.getString("model"))
                         .setHorsePower(resultSet.getInt("horse_power"))
                         .build();
 
-                carBuilderList.add(carBuilder);
+                carList.add(carBuilder);
             }
-        }
-        return carBuilderList;
+        return carList;
     }
 
-    public Optional<CarBuilder> getCarById(int id) throws SQLException, IOException {
-        String sql = "select * from car where id=?";
-        CarBuilder carBuilder = null;
-
-        try(Connection connection= DataBaseConnectorSingleton.getInstance().getConnection();
-            PreparedStatement preparedStatement=connection.prepareStatement(sql)){
-
-            preparedStatement.setInt(1, id);
-            ResultSet resultSet=preparedStatement.executeQuery();
-
+    public CarBuilder getCarById(int id) throws SQLException {
+        getCarById.setInt(1, id);
+        ResultSet resultSet=getCarById.executeQuery();
             if(resultSet.next()){
-                carBuilder = new CarBuilder.Builder()
-                        .setId(resultSet.getInt("id"))
+               CarBuilder carBuilder = new CarBuilder.Builder()
+                        .setId(resultSet.getInt("car_id"))
                         .setPersonId(resultSet.getInt("person_id"))
                         .setModel(resultSet.getString("model"))
                         .setHorsePower(resultSet.getInt("horse_power"))
                         .build();
+
+             return carBuilder;
             }
-            return Optional.ofNullable(carBuilder);
-        }
+            return null;
     }
 
-    public void addCar(CarBuilder carBuilder) throws SQLException, IOException {
-        String sql = "insert into car values(?,?,?,?)";
+    public void addCar(CarBuilder carBuilder) throws SQLException {
+            addCar.setInt(1, carBuilder.getPersonId());
+            addCar.setString(2, carBuilder.getModel());
+            addCar.setInt(3, carBuilder.getHorsePower());
 
-        try(Connection connection= DataBaseConnectorSingleton.getInstance().getConnection();
-            PreparedStatement preparedStatement=connection.prepareStatement(sql)){
-
-            preparedStatement.setInt(1, carBuilder.getId());
-            preparedStatement.setInt(2, carBuilder.getPersonId());
-            preparedStatement.setString(3, carBuilder.getModel());
-            preparedStatement.setInt(4, carBuilder.getHorsePower());
-
-            preparedStatement.executeUpdate();
-        }
+            addCar.executeUpdate();
     }
 
-    public void updateCar(CarBuilder carBuilder) throws SQLException, IOException {
-        String sql = "update car set model=?, horse_power=? where id=?";
+    public void updateCar(CarBuilder carBuilder, int id) throws SQLException {
+            updateCar.setString(1, carBuilder.getModel());
+            updateCar.setInt(2, carBuilder.getHorsePower());
+            updateCar.setInt(3, id);
 
-        try(Connection connection = DataBaseConnectorSingleton.getInstance().getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql)){
-
-            statement.setString(1, carBuilder.getModel());
-            statement.setInt(2, carBuilder.getHorsePower());
-            statement.setInt(3, carBuilder.getId());
-
-            statement.executeUpdate();
-        }
+            updateCar.executeUpdate();
     }
 
-    public void deleteCar(CarBuilder carBuilder) throws SQLException, IOException {
-        String sql = "delete from car where id=?";
-
-        try(Connection connection = DataBaseConnectorSingleton.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
-
-            preparedStatement.setInt(1, carBuilder.getId());
-            preparedStatement.executeUpdate();
-        }
+    public void deleteCar(int id) throws SQLException {
+            deleteCar.setInt(1, id);
+            deleteCar.executeUpdate();
     }
+
+    public CarBuilder getCarByPersonId(int id) throws SQLException {
+        getCarByPersonId.setInt(2, id);
+        ResultSet resultSet=getCarById.executeQuery();
+        if(resultSet.next()){
+            CarBuilder carBuilder = new CarBuilder.Builder()
+                    .setId(resultSet.getInt("car_id"))
+                    .setPersonId(resultSet.getInt("person_id"))
+                    .setModel(resultSet.getString("model"))
+                    .setHorsePower(resultSet.getInt("horse_power"))
+                    .build();
+
+            return carBuilder;
+        }
+        return null;
+    }
+
 }

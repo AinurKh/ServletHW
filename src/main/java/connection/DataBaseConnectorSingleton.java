@@ -17,7 +17,7 @@ public class DataBaseConnectorSingleton {
     // Настройка данных из db.properties
     private DataBaseConnectorSingleton() throws IOException, SQLException {
         Properties properties = new Properties();
-        InputStream input = Files.newInputStream(Paths.get("db.properties"));
+        InputStream input = Files.newInputStream(Paths.get("src/main/resources/db.properties"));
 
         properties.load(input);
 

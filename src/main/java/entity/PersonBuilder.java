@@ -1,6 +1,7 @@
 package entity;
 
 import java.util.List;
+import java.util.Optional;
 
 public class PersonBuilder {
     private int id;
@@ -29,8 +30,8 @@ public class PersonBuilder {
         return age;
     }
 
-    public CarBuilder getCar() {
-        return carBuilder;
+    public Optional<CarBuilder> getCar() {
+        return Optional.ofNullable(carBuilder);
     }
 
     public List<GasStationBuilder> getStationList() {
