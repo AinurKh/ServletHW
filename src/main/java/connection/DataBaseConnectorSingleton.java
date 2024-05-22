@@ -1,6 +1,5 @@
 package connection;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -10,13 +9,13 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class DataBaseConnector {
+public class DataBaseConnectorSingleton {
     private final Connection connection;
-    private static DataBaseConnector instance;
+    private static DataBaseConnectorSingleton instance;
 
 
     // Настройка данных из db.properties
-    private DataBaseConnector() throws IOException, SQLException {
+    private DataBaseConnectorSingleton() throws IOException, SQLException {
         Properties properties = new Properties();
         InputStream input = Files.newInputStream(Paths.get("db.properties"));
 
@@ -34,9 +33,9 @@ public class DataBaseConnector {
     }
 
     // Singleton реализация
-    public static DataBaseConnector getInstance() throws SQLException, IOException {
+    public static DataBaseConnectorSingleton getInstance() throws SQLException, IOException {
         if (instance == null || instance.getConnection().isClosed()) {
-            instance = new DataBaseConnector();
+            instance = new DataBaseConnectorSingleton();
         }
         return instance;
     }
