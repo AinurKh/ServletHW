@@ -1,10 +1,16 @@
 package service;
 
 import dao.GasStationDAO;
+import dto.GasStationDTO;
+import dto.MapperDTO;
+import dto.PersonDTO;
 import entity.GasStationBuilder;
+import entity.PersonBuilder;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GasStationService {
     private final GasStationDAO gasStationDAO;
@@ -31,6 +37,25 @@ public class GasStationService {
 
     public void deleteGasStation(int id) throws SQLException {
         gasStationDAO.deleteStation(id);
+    }
+
+    public List<GasStationDTO> getGasStationListAsDTO() throws SQLException {
+       return gasStationDAO.getAllStations()
+                .stream()
+                .map(MapperDTO::toGasStationDTO)
+                .collect(Collectors.toList());
+    }
+
+    public GasStationDTO convertToGasStationDTO(GasStationBuilder stationBuilder) throws SQLException, IOException {
+        return MapperDTO.toGasStationDTO(stationBuilder);
+    }
+
+    public GasStationBuilder convertToGasStation(GasStationDTO stationBuilder) throws SQLException, IOException {
+        return MapperDTO.toGasStationBuilder(stationBuilder);
+    }
+
+    public void createGasStationDTO(GasStationDTO stationDTO) throws SQLException, IOException {
+        gasStationDAO.addStation(convertToGasStation(stationDTO));
     }
 
 }
