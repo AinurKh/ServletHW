@@ -19,7 +19,6 @@ public class PersonDao {
     private static final String ADD_PERSON = "INSERT INTO person(name,age) VALUES(?, ?) returning id";
     private static final String DELETE_PERSON = "DELETE FROM person WHERE id = ?";
     private static final String UPDATE_PERSON = "UPDATE person SET name = ?, age = ? WHERE id = ?";
-    private static final String GET_PERSON_WITH_CAR="SELECT * FROM person  LEFT JOIN car ON person.id = car.person_id WHERE person.id = ?";
     private static final String GET_STATIONS_LIST = "SELECT * FROM gas_station JOIN person_gas_station ON gas_station.id = person_gas_station.gas_station_id WHERE person_gas_station.person_id = ?";
 
     private final PreparedStatement getAllPersons;
@@ -27,7 +26,6 @@ public class PersonDao {
     private final PreparedStatement addPerson;
     private final PreparedStatement deletePerson;
     private final PreparedStatement updatePerson;
-    private final PreparedStatement getPersonWithCar;
     private final PreparedStatement getStationsList;
 
     public PersonDao() throws SQLException, IOException {
@@ -37,7 +35,6 @@ public class PersonDao {
         addPerson=connection.prepareStatement(ADD_PERSON);
         deletePerson=connection.prepareStatement(DELETE_PERSON);
         updatePerson=connection.prepareStatement(UPDATE_PERSON);
-        getPersonWithCar=connection.prepareStatement(GET_PERSON_WITH_CAR);
         getStationsList=connection.prepareStatement(GET_STATIONS_LIST);
     }
 
@@ -122,27 +119,6 @@ public class PersonDao {
         }
     }
 
-    public PersonBuilder getPersonWithCar(int id) throws SQLException {
-        PersonBuilder person= null;
-        getPersonWithCar.setInt(1,id);
-        ResultSet resultSet = getPersonWithCar.executeQuery();
-        if (resultSet.next()){
-            CarBuilder car = new CarBuilder.Builder()
-                    .setId(resultSet.getInt("car_id"))
-                    .setModel(resultSet.getString("model"))
-                    .setPersonId(resultSet.getInt("person_id"))
-                    .setHorsePower(resultSet.getInt("horse_power"))
-                    .build();
-
-            person=new PersonBuilder.Builder()
-                    .setId(resultSet.getInt("id"))
-                    .setAge(resultSet.getInt("age"))
-                    .setName(resultSet.getString("name"))
-                    .setCar(car)
-                    .build();
-        }
-        return person;
-    }
 
     public    List<GasStationBuilder> getGasStations(int id) throws SQLException, IOException {
         List<GasStationBuilder> gasStations = new ArrayList<>();

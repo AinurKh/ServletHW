@@ -91,20 +91,5 @@ public class CarDao {
             deleteCar.executeUpdate();
     }
 
-    public CarBuilder getCarByPersonId(int id) throws SQLException {
-        getCarByPersonId.setInt(2, id);
-        ResultSet resultSet=getCarById.executeQuery();
-        if(resultSet.next()){
-            CarBuilder carBuilder = new CarBuilder.Builder()
-                    .setId(resultSet.getInt("car_id"))
-                    .setPersonId(resultSet.getInt("person_id"))
-                    .setModel(resultSet.getString("model"))
-                    .setHorsePower(resultSet.getInt("horse_power"))
-                    .build();
-
-            return carBuilder;
-        }
-        return null;
-    }
 
 }

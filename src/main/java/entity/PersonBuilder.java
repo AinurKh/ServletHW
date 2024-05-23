@@ -59,13 +59,13 @@ public class PersonBuilder {
 
     @Override
     public String toString() {
-        return "Person{" +
+        return "Person(" +
                 "id=" + id +
-                ", name='" + name + '\'' +
-                ", age=" + age +
-                ", carBuilder=" + carBuilder +
-                ", stationList=" + stationList +
-                '}';
+                " name='" + name + '\'' +
+                " age=" + age +
+                " carBuilder=" + carBuilder +
+                " stationList=" + stationList +
+                ')';
     }
 
     public static class Builder {

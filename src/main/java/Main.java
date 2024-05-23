@@ -25,17 +25,7 @@ public class Main {
                 .setAge(17)
                 .build();
 
-        GasStationDAO gasStationDao = new GasStationDAO();
-        GasStationBuilder gasStationBuilder = new GasStationBuilder.Builder()
-                .setName("TAIF")
-                .setNumber(1)
-                .build();
-
-        person = personDao.getPersonById(2);
-        gasStationBuilder = gasStationDao.getStationById(1);
-        PersonGasStationDAO personGasStationDao = new PersonGasStationDAO();
-        personGasStationDao.insertPersonGasStation(person.getId(),gasStationBuilder.getId());
-
+        System.out.println(personDao.getPersonById(2));
 
 
     }
