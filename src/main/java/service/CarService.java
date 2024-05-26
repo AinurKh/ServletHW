@@ -3,8 +3,10 @@ package service;
 import dao.CarDao;
 import dto.CarDTO;
 import dto.MapperDTO;
+import dto.PersonDTO;
 import entity.CarBuilder;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,5 +56,10 @@ public class CarService {
     public void createCarFromDTO(CarDTO car) throws SQLException {
         carDao.addCar(transformToCar(car));
     }
+
+    public void updateCarDTO(CarDTO car, int id) throws SQLException {
+        carDao.updateCar(transformToCar(car),id);
+    }
+
 
 }

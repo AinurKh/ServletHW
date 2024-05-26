@@ -28,10 +28,9 @@ public class Main {
                 .setAge(17)
                 .build();
 
-        person=personDao.getPersonById(1);
-        PersonService service =new PersonService(personDao);
-        PersonDTO personDTO = service.getPersonDTOById(14);
-        personDTO.setName("John");
-        service.updatePersonDTO(personDTO, personDTO.getId());
+        person=personDao.getPersonById(17);
+
+        System.out.println(person.getCar());
+
     }
 }

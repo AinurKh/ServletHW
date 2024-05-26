@@ -17,7 +17,7 @@ public class CarDao {
     private static final String GET_CAR_BY_PERSON_ID= "select * from car where person_id=?";
     private static final String ADD_CAR = "insert into car (person_id, model,horse_power) VALUES (?,?,?)";
     private static final String DELETE_CAR= "delete from car where car_id=?";
-    private static final String UPDATE_CAR= "update car set model = ?, horse_power = ? where id=?";
+    private static final String UPDATE_CAR= "update car set model = ?, horse_power = ? where car_id=?";
 
     private final PreparedStatement getCars;
 
@@ -91,5 +91,19 @@ public class CarDao {
             deleteCar.executeUpdate();
     }
 
+    public CarBuilder getCarByPersonId(int personId) throws SQLException {
+        getCarByPersonId.setInt(1, personId);
+        ResultSet resultSet=getCarByPersonId.executeQuery();
+        if(resultSet.next()){
+            CarBuilder builder = new CarBuilder.Builder()
+                    .setPersonId(resultSet.getInt("person_id"))
+                    .setHorsePower(resultSet.getInt("horse_power"))
+                    .setModel(resultSet.getString("model"))
+                    .setId(resultSet.getInt("car_id"))
+                    .build();
 
+            return builder;
+        }
+        return null;
+    }
 }

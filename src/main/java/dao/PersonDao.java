@@ -77,7 +77,7 @@ public class PersonDao {
                     .setName(resultSet.getString("name"))
                     .setAge(resultSet.getInt("age"))
                     .setStationList(getGasStations(id))
-                    .setCar(carDao.getCarById(id))
+                    .setCar(carDao.getCarByPersonId(id))
                     .build();
 
             return personBuilder;
