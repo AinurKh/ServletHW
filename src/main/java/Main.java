@@ -2,9 +2,12 @@ import dao.CarDao;
 import dao.GasStationDAO;
 import dao.PersonDao;
 import dao.PersonGasStationDAO;
+import dto.MapperDTO;
+import dto.PersonDTO;
 import entity.CarBuilder;
 import entity.GasStationBuilder;
 import entity.PersonBuilder;
+import service.PersonService;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -25,8 +28,10 @@ public class Main {
                 .setAge(17)
                 .build();
 
-        System.out.println(personDao.getPersonById(2));
-
-
+        person=personDao.getPersonById(1);
+        PersonService service =new PersonService(personDao);
+        PersonDTO personDTO = service.getPersonDTOById(14);
+        personDTO.setName("John");
+        service.updatePersonDTO(personDTO, personDTO.getId());
     }
 }

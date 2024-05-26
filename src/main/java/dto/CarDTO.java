@@ -37,4 +37,14 @@ public class CarDTO {
     public void setHorsePower(int horsePower) {
         this.horsePower = horsePower;
     }
+
+    @Override
+    public String toString() {
+        return "CarDTO{" +
+                "id=" + id +
+                ", personId=" + personId +
+                ", model='" + model + '\'' +
+                ", horsePower=" + horsePower +
+                '}';
+    }
 }

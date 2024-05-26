@@ -13,16 +13,15 @@ public class MapperDTO {
         personDTO.setId(person.getId());
         personDTO.setName(person.getName());
         personDTO.setAge(person.getAge());
-
-        if (person.getCar().isPresent()){
-            personDTO.setCar(toCarDTO(person.getCar().get()));
-        }
         if (person.getStationList()!=null){
             personDTO.setStationList(
                     person.getStationList()
                             .stream()
                             .map(MapperDTO::toGasStationDTO)
                             .collect(Collectors.toList()));
+        }
+        if (person.getCar().isPresent()){
+            personDTO.setCar(toCarDTO(person.getCar().get()));
         }
         return personDTO;
     }
@@ -32,10 +31,6 @@ public class MapperDTO {
                 .setId(personDTO.getId())
                 .setName(personDTO.getName())
                 .setAge(personDTO.getAge())
-                .setCar(toCarBuilder(personDTO.getCar()))
-                .setStationList(personDTO.getStationList().stream()
-                        .map(MapperDTO::toGasStationBuilder)
-                        .collect(Collectors.toList()))
                 .build();
 
         return person;
@@ -85,10 +80,6 @@ public class MapperDTO {
                 .setId(gasStationDTO.getId())
                 .setName(gasStationDTO.getName())
                 .setNumber(gasStationDTO.getNumber())
-                .setPeople(gasStationDTO.getPersonDTOList()
-                        .stream()
-                        .map(MapperDTO::toPersonBuilder)
-                        .collect(Collectors.toList()))
                 .build();
 
         return builder;

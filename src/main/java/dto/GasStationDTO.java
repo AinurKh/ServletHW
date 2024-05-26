@@ -39,4 +39,14 @@ public class GasStationDTO {
     public void setPersonDTOList(List<PersonDTO> personDTOList) {
         this.personDTOList = personDTOList;
     }
+
+    @Override
+    public String toString() {
+        return "GasStationDTO{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", number=" + number +
+                ", personDTOList=" + personDTOList +
+                '}';
+    }
 }

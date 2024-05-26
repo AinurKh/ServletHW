@@ -46,7 +46,7 @@ public class GasStationService {
                 .collect(Collectors.toList());
     }
 
-    public GasStationDTO convertToGasStationDTO(GasStationBuilder stationBuilder) throws SQLException, IOException {
+    public GasStationDTO getGasStationAsDTO(GasStationBuilder stationBuilder) throws SQLException, IOException {
         return MapperDTO.toGasStationDTO(stationBuilder);
     }
 

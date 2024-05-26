@@ -38,14 +38,15 @@ public class PersonDao {
         getStationsList=connection.prepareStatement(GET_STATIONS_LIST);
     }
 
-    public void addPerson(PersonBuilder personBuilder) throws SQLException, IOException {
+    public void addPerson(PersonBuilder personBuilder) throws SQLException {
             addPerson.setString(1, personBuilder.getName());
             addPerson.setInt(2, personBuilder.getAge());
             ResultSet resultSet = addPerson.executeQuery();
 
-            if (checkCar(personBuilder)){
-                addCar(resultSet,personBuilder);
-            }
+//          Для работы через метод main раскоментировать
+//            if (checkCar(personBuilder)){
+//                addCar(resultSet,personBuilder);
+//            }
     }
 
     public List<PersonBuilder> getPeople() throws SQLException, IOException {

@@ -43,7 +43,7 @@ public class PersonService {
                 collect(Collectors.toList());
     }
 
-    public PersonDTO convertToPersonDTO(PersonBuilder person) throws SQLException, IOException {
+    public PersonDTO getPersonAsDTO(PersonBuilder person) throws SQLException, IOException {
        return MapperDTO.toPersonDTO(person);
     }
 
@@ -53,6 +53,14 @@ public class PersonService {
 
     public void createPersonDTO(PersonDTO person) throws SQLException, IOException {
         personDao.addPerson(convertToPersonBuilder(person));
+    }
+
+    public void updatePersonDTO(PersonDTO person, int id) throws SQLException, IOException {
+        personDao.updatePerson(convertToPersonBuilder(person), id);
+    }
+
+    public PersonDTO getPersonDTOById(int id) throws SQLException, IOException {
+       return MapperDTO.toPersonDTO(personDao.getPersonById(id));
     }
 
 

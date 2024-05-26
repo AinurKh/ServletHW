@@ -17,15 +17,21 @@ public class DataBaseConnectorSingleton {
     // Настройка данных из db.properties
     private DataBaseConnectorSingleton() throws IOException, SQLException {
         Properties properties = new Properties();
-        InputStream input = Files.newInputStream(Paths.get("src/main/resources/db.properties"));
+        InputStream input = Files.newInputStream(Paths.get("C:/JAVA/ServletHW/src/main/resources/db.properties"));
 
         properties.load(input);
 
         String url = properties.getProperty("db.url");
         String user = properties.getProperty("db.user");
         String password = properties.getProperty("db.password");
+        String driver = properties.getProperty("db.driver");
+        try {
+            Class.forName(driver);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 
-       connection= DriverManager.getConnection(url,user,password);
+        connection= DriverManager.getConnection(url,user,password);
     }
 
     public Connection getConnection() {
