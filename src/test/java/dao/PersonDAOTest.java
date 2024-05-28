@@ -89,7 +89,7 @@ public class PersonDAOTest {
         assertEquals(person.getAge(),personFromDB.getAge(),"Age should match");
     }
 
-    @Test
+   @Test
     void testGetPeople() throws SQLException, IOException {
         PersonBuilder person1 = new PersonBuilder.Builder()
                 .setName("OJEAN")
@@ -145,6 +145,4 @@ public class PersonDAOTest {
         assertNotEquals(person.getName(),personFromDB.getName(),"Name should different");
         assertNotEquals(person.getAge(),personFromDB.getAge(),"Age should different");
     }
-
-
 }

@@ -32,7 +32,7 @@ public class Main {
         PersonService personService = new PersonService(personDao);
 
            person=personDao.getPersonById(1);
-        System.out.println(person.getStationList());
+        System.out.println(carDao.getCars());
 
         PersonGasStationDAO personGasStationDAO = new PersonGasStationDAO();
 

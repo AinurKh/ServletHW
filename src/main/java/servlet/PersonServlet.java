@@ -22,7 +22,6 @@ import java.util.List;
 @WebServlet("/people/*")
 public class PersonServlet extends HttpServlet {
     private PersonService personService;
-    private static final Logger logger = Logger.getLogger(PersonServlet.class.getName());
 
 
 

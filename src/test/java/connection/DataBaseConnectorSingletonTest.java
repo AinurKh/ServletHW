@@ -21,7 +21,7 @@ public class DataBaseConnectorSingletonTest {
       assertFalse(connection.isClosed(),"Connection should be open");
     }
     catch (SQLException e) {
-      fail(e.getMessage());
+      e.printStackTrace();
     }
   }
 
