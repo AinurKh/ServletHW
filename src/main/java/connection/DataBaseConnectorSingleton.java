@@ -39,9 +39,13 @@ public class DataBaseConnectorSingleton {
     }
 
     // Singleton реализация
-    public static DataBaseConnectorSingleton getInstance() throws SQLException, IOException {
+    public static DataBaseConnectorSingleton getInstance() throws IOException, SQLException  {
         if (instance == null || instance.getConnection().isClosed()) {
-            instance = new DataBaseConnectorSingleton();
+            try {
+                instance = new DataBaseConnectorSingleton();
+            } catch (IOException | SQLException e) {
+                throw e; // Пробросим исключение дальше
+            }
         }
         return instance;
     }

@@ -38,8 +38,8 @@ public class PersonService {
 
     public List<PersonDTO> getPeopleAsDTO() throws SQLException, IOException {
         return personDao.getPeople()
-                .stream().
-                map(MapperDTO::toPersonDTO).
+                .stream()
+                .map(MapperDTO::toPersonDTO).
                 collect(Collectors.toList());
     }
 

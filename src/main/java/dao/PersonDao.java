@@ -21,6 +21,7 @@ public class PersonDao {
     private static final String UPDATE_PERSON = "UPDATE person SET name = ?, age = ? WHERE id = ?";
     private static final String GET_STATIONS_LIST = "SELECT * FROM gas_station JOIN person_gas_station ON gas_station.id = person_gas_station.gas_station_id WHERE person_gas_station.person_id = ?";
 
+    Connection connection;
     private final PreparedStatement getAllPersons;
     private final PreparedStatement getPersonById;
     private final PreparedStatement addPerson;
@@ -28,8 +29,8 @@ public class PersonDao {
     private final PreparedStatement updatePerson;
     private final PreparedStatement getStationsList;
 
-    public PersonDao() throws SQLException, IOException {
-        Connection connection = DataBaseConnectorSingleton.getInstance().getConnection();
+    public PersonDao(Connection connector) throws SQLException, IOException {
+        this.connection = connector;
         getAllPersons=connection.prepareStatement(GET_ALL_PERSONS);
         getPersonById=connection.prepareStatement(GET_PERSON_BY_ID);
         addPerson=connection.prepareStatement(ADD_PERSON);
@@ -38,20 +39,32 @@ public class PersonDao {
         getStationsList=connection.prepareStatement(GET_STATIONS_LIST);
     }
 
-    public void addPerson(PersonBuilder personBuilder) throws SQLException {
+    public PersonDao() throws SQLException, IOException {
+        connection = DataBaseConnectorSingleton.getInstance().getConnection();
+        getAllPersons=connection.prepareStatement(GET_ALL_PERSONS);
+        getPersonById=connection.prepareStatement(GET_PERSON_BY_ID);
+        addPerson=connection.prepareStatement(ADD_PERSON);
+        deletePerson=connection.prepareStatement(DELETE_PERSON);
+        updatePerson=connection.prepareStatement(UPDATE_PERSON);
+        getStationsList=connection.prepareStatement(GET_STATIONS_LIST);
+    }
+
+
+    public int addPerson(PersonBuilder personBuilder) throws SQLException {
             addPerson.setString(1, personBuilder.getName());
             addPerson.setInt(2, personBuilder.getAge());
             ResultSet resultSet = addPerson.executeQuery();
 
-//          Для работы через метод main раскоментировать
-//            if (checkCar(personBuilder)){
-//                addCar(resultSet,personBuilder);
-//            }
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+            throw new SQLException();
     }
 
     public List<PersonBuilder> getPeople() throws SQLException, IOException {
         List<PersonBuilder> peopleList = new ArrayList<>();
         CarDao carDao=new CarDao();
+
         ResultSet resultSet = getAllPersons.executeQuery();
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
@@ -59,7 +72,8 @@ public class PersonDao {
                         .setId(resultSet.getInt("id"))
                         .setName(resultSet.getString("name"))
                         .setAge(resultSet.getInt("age"))
-                        .setCar(carDao.getCarById(id))
+                        .setStationList(getGasStations(id))
+                        .setCar(carDao.getCarByPersonId(id))
                         .build();
                 peopleList.add(personBuilder);
             }
@@ -98,29 +112,6 @@ public class PersonDao {
             deletePerson.executeUpdate();
     }
 
-    // Проверка есть ли у мужика уже машина, если есть то ее сразу вместе засунуть.
-    private boolean checkCar(PersonBuilder person){
-       return person.getCar().isPresent();
-    }
-
-    // Засунуть авто вместе с владельцем
-    private void addCar(ResultSet resultSet, PersonBuilder personBuilder) throws SQLException, IOException {
-        if (resultSet.next()) {
-            int id = resultSet.getInt(1);
-
-            CarBuilder car = new CarBuilder.Builder()
-                    .setPersonId(id)
-                    .setModel(personBuilder.getCar().get().getModel())
-                    .setHorsePower(personBuilder.getCar().get().getHorsePower())
-                    .build();
-
-            CarDao carDao = new CarDao();
-
-            carDao.addCar(car);
-        }
-    }
-
-
     public    List<GasStationBuilder> getGasStations(int id) throws SQLException, IOException {
         List<GasStationBuilder> gasStations = new ArrayList<>();
         String SQL = "SELECT * FROM gas_station JOIN person_gas_station ON gas_station.id = person_gas_station.gas_station_id WHERE person_gas_station.person_id = ?";
@@ -136,6 +127,5 @@ public class PersonDao {
         }
         return gasStations;
     }
-
 
 }

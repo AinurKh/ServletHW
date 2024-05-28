@@ -18,6 +18,7 @@
         <th>Name</th>
         <th>Age</th>
         <th>Car</th>
+        <th>GasStation</th>
         <th>Actions</th>
     </tr>
     <c:forEach var="person" items="${peopleDTOList}">
@@ -26,6 +27,17 @@
             <td><input type="text" id="name-${person.id}" value="${person.name}" disabled></td>
             <td><input type="number" id="age-${person.id}" value="${person.age}" disabled></td>
             <td><input type="text" id="car-${person.id}" value="${person.car.model}" disabled></td>
+            <td>
+                <c:if test="${not empty person.stationList}">
+                    <c:forEach var="station" items="${person.stationList}">
+                        <input type="text" id="gas-${station.id}" value="${station.name} №${station.number}" disabled>
+                        <br>
+                    </c:forEach>
+                </c:if>
+                <c:if test="${empty person.stationList}">
+                    <input type="text" value="No gas stations available." disabled>
+                </c:if>
+            </td>
 
             <td>
                 <button id="updateButton-${person.id}" onclick="toggleEditMode(${person.id})">Update</button>

@@ -11,6 +11,7 @@ import service.PersonService;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,9 +29,19 @@ public class Main {
                 .setAge(17)
                 .build();
 
-        person=personDao.getPersonById(17);
+        PersonService personService = new PersonService(personDao);
 
-        System.out.println(person.getCar());
+           person=personDao.getPersonById(1);
+        System.out.println(person.getStationList());
+
+        PersonGasStationDAO personGasStationDAO = new PersonGasStationDAO();
+
+        GasStationDAO gasStationDAO = new GasStationDAO();
+
+        GasStationBuilder gasStationBuilder = new GasStationBuilder.Builder()
+                .setNumber(14)
+                .setName("GRACOS")
+                .build();
 
     }
 }

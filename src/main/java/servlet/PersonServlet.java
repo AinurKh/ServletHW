@@ -2,6 +2,7 @@ package servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.PersonDao;
+import dto.GasStationDTO;
 import dto.PersonDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -31,8 +32,6 @@ public class PersonServlet extends HttpServlet {
         try {
            PersonDao personDao = new PersonDao();
            personService = new PersonService(personDao);
-
-
         } catch (SQLException |IOException e) {
             throw new RuntimeException(e);
         }
@@ -48,13 +47,6 @@ public class PersonServlet extends HttpServlet {
                 }
                 req.setAttribute("peopleDTOList", personDTOList);
             req.getRequestDispatcher("/WEB-INF/view/Person.jsp").forward(req, resp);
-
-        try {
-            PersonDTO personDTO = personService.getPersonDTOById(14);
-            System.out.println(personDTO.getCar());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
     }
 
