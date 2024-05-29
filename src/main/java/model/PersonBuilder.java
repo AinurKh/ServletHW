@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 public class PersonBuilder {
-    private final int id;
-    private final String name;
-    private final int age;
-    private final Optional<CarBuilder> carBuilder;
-    private final List<GasStationBuilder> stationList;
+    private  int id;
+    private  String name;
+    private  int age;
+    private Optional<CarBuilder> carBuilder = Optional.empty();
+    private  List<GasStationBuilder> stationList;
 
     private PersonBuilder(Builder builder) {
         this.id = builder.id;
@@ -72,7 +72,7 @@ public class PersonBuilder {
         private int id;
         private String name;
         private int age;
-        private Optional<CarBuilder> carBuilder;
+        private Optional<CarBuilder> carBuilder = Optional.empty();
         private List<GasStationBuilder> stationList;
 
         public Builder() {}

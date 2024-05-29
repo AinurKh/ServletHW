@@ -41,6 +41,24 @@ public class GasStationDTO {
     }
 
     @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GasStationDTO)) return false;
+
+        GasStationDTO that = (GasStationDTO) o;
+        return id == that.id && number == that.number && name.equals(that.name) && personDTOList.equals(that.personDTOList);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + name.hashCode();
+        result = 31 * result + number;
+        result = 31 * result + personDTOList.hashCode();
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "GasStationDTO{" +
                 "id=" + id +

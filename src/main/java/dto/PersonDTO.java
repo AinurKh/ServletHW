@@ -50,6 +50,25 @@ public class PersonDTO {
     }
 
     @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PersonDTO)) return false;
+
+        PersonDTO personDTO = (PersonDTO) o;
+        return id == personDTO.id && age == personDTO.age && name.equals(personDTO.name) && car.equals(personDTO.car) && stationList.equals(personDTO.stationList);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + name.hashCode();
+        result = 31 * result + age;
+        result = 31 * result + car.hashCode();
+        result = 31 * result + stationList.hashCode();
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "PersonDTO{" +
                 "id=" + id +
