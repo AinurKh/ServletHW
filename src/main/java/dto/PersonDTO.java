@@ -1,21 +1,13 @@
-package entity;
+package dto;
 
 import java.util.List;
 
-public class Person {
+public class PersonDTO {
     private int id;
     private String name;
     private int age;
-    private Car car;
-    private List<GasStation> stationList;
-
-    public Person() {}
-
-    public Person(int id, String name, int age) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
-    }
+    private CarDTO car;
+    private List<GasStationDTO> stationList;
 
     public int getId() {
         return id;
@@ -41,13 +33,29 @@ public class Person {
         this.age = age;
     }
 
+    public CarDTO getCar() {
+        return car;
+    }
+
+    public void setCar(CarDTO car) {
+        this.car = car;
+    }
+
+    public List<GasStationDTO> getStationList() {
+        return stationList;
+    }
+
+    public void setStationList(List<GasStationDTO> stationList) {
+        this.stationList = stationList;
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Person)) return false;
+        if (!(o instanceof PersonDTO)) return false;
 
-        Person person = (Person) o;
-        return id == person.id && age == person.age && name.equals(person.name);
+        PersonDTO personDTO = (PersonDTO) o;
+        return id == personDTO.id && age == personDTO.age && name.equals(personDTO.name) && car.equals(personDTO.car) && stationList.equals(personDTO.stationList);
     }
 
     @Override
@@ -55,15 +63,19 @@ public class Person {
         int result = id;
         result = 31 * result + name.hashCode();
         result = 31 * result + age;
+        result = 31 * result + car.hashCode();
+        result = 31 * result + stationList.hashCode();
         return result;
     }
 
     @Override
     public String toString() {
-        return "Person{" +
+        return "PersonDTO{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", age=" + age +
+                ", car=" + car +
+                ", stationList=" + stationList +
                 '}';
     }
 }

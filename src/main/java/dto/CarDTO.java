@@ -1,20 +1,10 @@
-package entity;
+package dto;
 
-public class Car {
+public class CarDTO {
     private int id;
     private int personId;
     private String model;
     private int horsePower;
-
-    public Car() {
-    }
-
-    public Car(int id, int personId, String model, int horsePower) {
-        this.id = id;
-        this.personId = personId;
-        this.model = model;
-        this.horsePower = horsePower;
-    }
 
     public int getId() {
         return id;
@@ -51,10 +41,10 @@ public class Car {
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Car)) return false;
+        if (!(o instanceof CarDTO)) return false;
 
-        Car car = (Car) o;
-        return id == car.id && personId == car.personId && horsePower == car.horsePower && model.equals(car.model);
+        CarDTO carDTO = (CarDTO) o;
+        return id == carDTO.id && personId == carDTO.personId && horsePower == carDTO.horsePower && model.equals(carDTO.model);
     }
 
     @Override
@@ -68,7 +58,7 @@ public class Car {
 
     @Override
     public String toString() {
-        return "Car{" +
+        return "CarDTO{" +
                 "id=" + id +
                 ", personId=" + personId +
                 ", model='" + model + '\'' +

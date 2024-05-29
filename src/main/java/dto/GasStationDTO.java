@@ -1,20 +1,12 @@
-package entity;
+package dto;
 
 import java.util.List;
 
-public class GasStation {
+public class GasStationDTO {
     private int id;
     private String name;
     private int number;
-    private List<Person> people;
-
-    public GasStation() {}
-
-    public GasStation(int id, String name, int number) {
-        this.id = id;
-        this.name = name;
-        this.number = number;
-    }
+    private List<PersonDTO> personDTOList;
 
     public int getId() {
         return id;
@@ -40,21 +32,21 @@ public class GasStation {
         this.number = number;
     }
 
-    public List<Person> getPeople() {
-        return people;
+    public List<PersonDTO> getPersonDTOList() {
+        return personDTOList;
     }
 
-    public void setPeople(List<Person> people) {
-        this.people = people;
+    public void setPersonDTOList(List<PersonDTO> personDTOList) {
+        this.personDTOList = personDTOList;
     }
 
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof GasStation)) return false;
+        if (!(o instanceof GasStationDTO)) return false;
 
-        GasStation that = (GasStation) o;
-        return id == that.id && number == that.number && name.equals(that.name);
+        GasStationDTO that = (GasStationDTO) o;
+        return id == that.id && number == that.number && name.equals(that.name) && personDTOList.equals(that.personDTOList);
     }
 
     @Override
@@ -62,16 +54,17 @@ public class GasStation {
         int result = id;
         result = 31 * result + name.hashCode();
         result = 31 * result + number;
+        result = 31 * result + personDTOList.hashCode();
         return result;
     }
 
     @Override
     public String toString() {
-        return "GasStation{" +
+        return "GasStationDTO{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", number=" + number +
-                ", people=" + people +
+                ", personDTOList=" + personDTOList +
                 '}';
     }
 }
