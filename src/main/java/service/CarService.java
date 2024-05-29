@@ -36,9 +36,6 @@ public class CarService {
         carDao.deleteCar(id);
     }
 
-    public CarDTO getCarAsDTO(CarBuilder car) throws SQLException {
-        return MapperDTO.toCarDTO(car);
-    }
 
     public List<CarDTO> getCarsAsDTO() throws SQLException {
         return carDao.getCars()
