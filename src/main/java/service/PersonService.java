@@ -58,11 +58,4 @@ public class PersonService {
         personDao.updatePerson(convertToPersonBuilder(person), id);
     }
 
-    public PersonDTO getPersonDTOById(int id) throws SQLException, IOException {
-       return MapperDTO.toPersonDTO(personDao.getPersonById(id));
-    }
-
-
-
-
 }
