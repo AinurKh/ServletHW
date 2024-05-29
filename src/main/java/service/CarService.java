@@ -3,10 +3,8 @@ package service;
 import dao.CarDao;
 import dto.CarDTO;
 import dto.MapperDTO;
-import dto.PersonDTO;
-import entity.CarBuilder;
+import model.CarBuilder;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;

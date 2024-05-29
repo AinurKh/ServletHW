@@ -2,18 +2,13 @@ import dao.CarDao;
 import dao.GasStationDAO;
 import dao.PersonDao;
 import dao.PersonGasStationDAO;
-import dto.MapperDTO;
-import dto.PersonDTO;
-import entity.CarBuilder;
-import entity.GasStationBuilder;
-import entity.PersonBuilder;
+import model.CarBuilder;
+import model.GasStationBuilder;
+import model.PersonBuilder;
 import service.PersonService;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 public class Main {
     public static void main(String[] args) throws SQLException, IOException {

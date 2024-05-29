@@ -1,8 +1,8 @@
 package dto;
 
-import entity.CarBuilder;
-import entity.GasStationBuilder;
-import entity.PersonBuilder;
+import model.CarBuilder;
+import model.GasStationBuilder;
+import model.PersonBuilder;
 
 import java.util.stream.Collectors;
 

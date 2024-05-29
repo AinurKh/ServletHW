@@ -1,7 +1,7 @@
 package dao;
 
 import connection.DataBaseConnectorSingleton;
-import entity.CarBuilder;
+import model.CarBuilder;
 
 import java.io.IOException;
 import java.sql.Connection;

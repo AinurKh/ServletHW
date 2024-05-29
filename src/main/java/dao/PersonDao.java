@@ -1,9 +1,7 @@
 package dao;
 
 import connection.DataBaseConnectorSingleton;
-import entity.CarBuilder;
-import entity.GasStationBuilder;
-import entity.PersonBuilder;
+import model.PersonBuilder;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -12,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class PersonDao {
     private static final String GET_ALL_PERSONS = "select * from person order by id ASC ";
@@ -58,7 +57,7 @@ public class PersonDao {
                             .setName(resultSet.getString("name"))
                             .setAge(resultSet.getInt("age"))
                             .setStationList(gasStationDAO.getGasStationsByPersonId(id))
-                            .setCar(carDao.getCarByPersonId(id))
+                            .setCar(Optional.ofNullable(carDao.getCarByPersonId(id)))
                             .build();
                     peopleList.add(personBuilder);
                 }
@@ -80,7 +79,7 @@ public class PersonDao {
                         .setName(resultSet.getString("name"))
                         .setAge(resultSet.getInt("age"))
                         .setStationList(gasStationDao.getGasStationsByPersonId(id))
-                        .setCar(carDao.getCarByPersonId(id))
+                        .setCar(Optional.ofNullable(carDao.getCarByPersonId(id)))
                         .build();
 
                 return personBuilder;

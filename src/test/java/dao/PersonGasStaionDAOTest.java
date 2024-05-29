@@ -1,7 +1,7 @@
 package dao;
 
-import entity.GasStationBuilder;
-import entity.PersonBuilder;
+import model.GasStationBuilder;
+import model.PersonBuilder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;

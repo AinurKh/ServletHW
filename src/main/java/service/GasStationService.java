@@ -3,9 +3,7 @@ package service;
 import dao.GasStationDAO;
 import dto.GasStationDTO;
 import dto.MapperDTO;
-import dto.PersonDTO;
-import entity.GasStationBuilder;
-import entity.PersonBuilder;
+import model.GasStationBuilder;
 
 import java.io.IOException;
 import java.sql.SQLException;

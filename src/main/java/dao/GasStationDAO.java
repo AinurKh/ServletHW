@@ -1,8 +1,8 @@
 package dao;
 
 import connection.DataBaseConnectorSingleton;
-import entity.GasStationBuilder;
-import entity.PersonBuilder;
+import model.GasStationBuilder;
+import model.PersonBuilder;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class GasStationDAO {
    private static final String ADD_STATION = "INSERT INTO gas_station (name,number) VALUES (?,?) returning id";
@@ -114,7 +115,7 @@ public class GasStationDAO {
                            .setName(resultSet.getString("name"))
                            .setAge(resultSet.getInt("age"))
                            .setStationList(getGasStationsByPersonId(resultSet.getInt("id")))
-                           .setCar(carDao.getCarById(resultSet.getInt("id")))
+                           .setCar(Optional.ofNullable(carDao.getCarById(resultSet.getInt("id"))))
                            .build();
                    persons.add(personBuilder);
                }

@@ -1,7 +1,6 @@
 package dao;
 
-import connection.DataBaseConnectorSingleton;
-import entity.PersonBuilder;
+import model.PersonBuilder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;

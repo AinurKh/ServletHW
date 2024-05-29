@@ -1,4 +1,4 @@
-package entity;
+package model;
 
 import java.util.List;
 import java.util.Optional;
@@ -7,7 +7,7 @@ public class PersonBuilder {
     private final int id;
     private final String name;
     private final int age;
-    private final CarBuilder carBuilder;
+    private final Optional<CarBuilder> carBuilder;
     private final List<GasStationBuilder> stationList;
 
     private PersonBuilder(Builder builder) {
@@ -31,7 +31,7 @@ public class PersonBuilder {
     }
 
     public Optional<CarBuilder> getCar() {
-        return Optional.ofNullable(carBuilder);
+        return carBuilder;
     }
 
     public List<GasStationBuilder> getStationList() {
@@ -59,20 +59,20 @@ public class PersonBuilder {
 
     @Override
     public String toString() {
-        return "Person(" +
+        return "PersonBuilder{" +
                 "id=" + id +
-                " name='" + name + '\'' +
-                " age=" + age +
-                " carBuilder=" + carBuilder +
-                " stationList=" + stationList +
-                ')';
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                ", carBuilder=" + carBuilder +
+                ", stationList=" + stationList +
+                '}';
     }
 
     public static class Builder {
         private int id;
         private String name;
         private int age;
-        private CarBuilder carBuilder;
+        private Optional<CarBuilder> carBuilder;
         private List<GasStationBuilder> stationList;
 
         public Builder() {}
@@ -92,7 +92,7 @@ public class PersonBuilder {
             return this;
         }
 
-        public Builder setCar(CarBuilder carBuilder) {
+        public Builder setCar(Optional<CarBuilder> carBuilder) {
             this.carBuilder = carBuilder;
             return this;
         }
