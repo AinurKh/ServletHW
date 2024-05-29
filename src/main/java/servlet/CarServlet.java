@@ -35,7 +35,7 @@ public class CarServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<CarDTO> carDTOS = null;
         try {
             carDTOS = carService.getCarsAsDTO();
@@ -48,7 +48,7 @@ public class CarServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         CarDTO carDTO = new CarDTO();
 
         carDTO.setPersonId(Integer.parseInt(req.getParameter("personId")));
@@ -64,7 +64,7 @@ public class CarServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         String pathInfo = req.getPathInfo();
         String[] pathParts = pathInfo.split("/");
@@ -80,11 +80,6 @@ public class CarServlet extends HttpServlet {
         // Преобразуем JSON в объект Java с помощью библиотеки Jackson
         ObjectMapper objectMapper = new ObjectMapper();
         CarDTO carDTO = objectMapper.readValue(json, CarDTO.class);
-        System.out.println(carDTO.getPersonId());
-        System.out.println(carDTO.getModel());
-        System.out.println(carDTO.getHorsePower());
-        System.out.println(carDTO.getId());
-
         try {
             carService.updateCarDTO(carDTO,carDTO.getId());
         } catch (SQLException e) {
@@ -94,7 +89,7 @@ public class CarServlet extends HttpServlet {
 
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
 
         if (pathInfo != null && pathInfo.length() > 1) {

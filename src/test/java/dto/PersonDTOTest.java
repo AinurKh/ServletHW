@@ -85,9 +85,12 @@ public class PersonDTOTest {
     @Test
     @Order(6)
     void testHashCode(){
+        CarDTO carDTO = new CarDTO();
+        carDTO.setModel("AUDI");
+
         person = new PersonDTO();
         person.setName("SAM");
-        person.setCar(new CarDTO());
+        person.setCar(carDTO);
         person.setStationList(new ArrayList<GasStationDTO>());
         person.setAge(20);
 

@@ -37,7 +37,7 @@ public class PersonServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             List<PersonDTO> personDTOList = null;
                 try {
                     personDTOList = personService.getPeopleAsDTO();
@@ -50,7 +50,7 @@ public class PersonServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         PersonDTO personDTO = new PersonDTO();
         personDTO.setName(req.getParameter("name"));
@@ -64,10 +64,10 @@ public class PersonServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-       String pathInfo = req.getPathInfo();
-       String[] pathParts = pathInfo.split("/");
+        String pathInfo = req.getPathInfo();
+        String[] pathParts = pathInfo.split("/");
 
         BufferedReader reader = req.getReader();
         StringBuilder jsonBuilder = new StringBuilder();
@@ -89,7 +89,7 @@ public class PersonServlet extends HttpServlet {
 
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo != null && pathInfo.length() > 1) {
 
